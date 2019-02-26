@@ -122,7 +122,7 @@ public class OperacionesDepart extends JDialog {
 				ODB odb=ODBFactory.open(BBDD);
 				
 				try{
-					num=Integer.parseInt(txNumDepart.getText());
+					num=insertarDep();
 					comprobarNumDepart(odb, num);
 					if(!txNombre.getText().equals("")){
 						if(!txPoblacion.getText().equals("")){
@@ -148,6 +148,13 @@ public class OperacionesDepart extends JDialog {
 					odb.close();
 				}
 			}
+
+			/**
+			 * @return
+			 */
+			public int insertarDep() {
+				return Integer.parseInt(txNumDepart.getText());
+			}
 		});
 		
 		//Accion boton borrar departamento
@@ -157,7 +164,7 @@ public class OperacionesDepart extends JDialog {
 				ODB odb=ODBFactory.open(BBDD);
 				
 				try{
-					num=Integer.parseInt(txNumDepart.getText());
+					num=borrarDep();
 					IQuery query=new CriteriaQuery(Departamento.class, Where.equal("dept_no", num));
 					Objects<Departamento> dep=odb.getObjects(query);
 					if(!dep.isEmpty()){
@@ -181,6 +188,13 @@ public class OperacionesDepart extends JDialog {
 					odb.close();
 				}
 			}
+
+			/**
+			 * @return
+			 */
+			public int borrarDep() {
+				return Integer.parseInt(txNumDepart.getText());
+			}
 		});
 		
 		//Accion boton consultar departamento
@@ -190,7 +204,7 @@ public class OperacionesDepart extends JDialog {
 				ODB odb=ODBFactory.open(BBDD);
 				
 				try{
-					num=Integer.parseInt(txNumDepart.getText());
+					num=consultarDep();
 					IQuery query=new CriteriaQuery(Departamento.class, Where.equal("dept_no", num));
 					Objects<Departamento> dep=odb.getObjects(query);
 					if(!dep.isEmpty()){
@@ -208,6 +222,13 @@ public class OperacionesDepart extends JDialog {
 					odb.close();
 				}
 			}
+
+			/**
+			 * @return
+			 */
+			public int consultarDep() {
+				return Integer.parseInt(txNumDepart.getText());
+			}
 		});
 		
 		//Accion boton modificar departamento
@@ -217,7 +238,7 @@ public class OperacionesDepart extends JDialog {
 				ODB odb=ODBFactory.open(BBDD);
 				
 				try{
-					num=Integer.parseInt(txNumDepart.getText());
+					num=modificarDep();
 					IQuery query=new CriteriaQuery(Departamento.class, Where.equal("dept_no", num));
 					Objects<Departamento> dep=odb.getObjects(query);
 					if(!dep.isEmpty()){
@@ -245,6 +266,13 @@ public class OperacionesDepart extends JDialog {
 				finally{
 					odb.close();
 				}
+			}
+
+			/**
+			 * @return
+			 */
+			public int modificarDep() {
+				return Integer.parseInt(txNumDepart.getText());
 			}
 		});
 	}

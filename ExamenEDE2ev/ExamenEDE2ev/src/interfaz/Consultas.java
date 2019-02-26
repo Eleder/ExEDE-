@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import logica.Departamento;
 import logica.Empleado;
 
-import org.neodatis.odb.ODB;
 import org.neodatis.odb.ODBFactory;
 import org.neodatis.odb.ObjectValues;
 import org.neodatis.odb.Objects;
@@ -30,61 +29,56 @@ import javax.swing.border.CompoundBorder;
 @SuppressWarnings("serial")
 public class Consultas extends JDialog implements ActionListener  {
 
-	private final JPanel contentPane;
-	private JLabel lblResultado;
-	JButton btnDepar = new JButton("Ver departamentos");
-	JButton btnEmple = new JButton("Ver empleados");
-	JButton btnEstadDepar = new JButton("Estadisticas departamentos");
-	JButton btnEstadEmple = new JButton("Estadisticas empleados");
-	private ODB odb =null;
+	Eiqueta data = new Eiqueta(new JButton("Ver departamentos"), new JButton("Ver empleados"), new JButton("Estadisticas departamentos"), new JButton("Estadisticas empleados"), null);
+	public static String bbdd;
 	
 	public Consultas() {
 		setTitle("CONSULTAS A LA BD");
 		setModal(true);
 		setBounds(100, 100, 450, 340);
-		contentPane = new JPanel();
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		data.setContentPane(new JPanel());
+		setContentPane(data.getContentPane());
+		data.getContentPane().setLayout(null);
 		
 		JLabel label_1 = new JLabel("CONSULTAS A LA BBDD");
 		label_1.setForeground(Color.BLUE);
 		label_1.setFont(new Font("Sylfaen", Font.BOLD, 15));
 		label_1.setBounds(112, 24, 217, 32);
-		contentPane.add(label_1);
+		data.getContentPane().add(label_1);
 		
 	
-		btnDepar.setBounds(111, 92, 218, 23);
-		contentPane.add(btnDepar);
+		data.getBtnDepar().setBounds(111, 92, 218, 23);
+		data.getContentPane().add(data.getBtnDepar());
 		
 
-		btnEmple.setBounds(111, 128, 218, 23);
-		contentPane.add(btnEmple);
+		data.getBtnEmple().setBounds(111, 128, 218, 23);
+		data.getContentPane().add(data.getBtnEmple());
 		
 	
-		btnEstadDepar.setBounds(111, 164, 218, 23);
-		contentPane.add(btnEstadDepar);
+		data.getBtnEstadDepar().setBounds(111, 164, 218, 23);
+		data.getContentPane().add(data.getBtnEstadDepar());
 		
 	
-		btnEstadEmple.setBounds(111, 200, 218, 23);
-		contentPane.add(btnEstadEmple);
+		data.getBtnEstadEmple().setBounds(111, 200, 218, 23);
+		data.getContentPane().add(data.getBtnEstadEmple());
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new CompoundBorder());
 		panel.setBackground(Color.GREEN);
 		panel.setBounds(60, 67, 314, 181);
-		contentPane.add(panel);
+		data.getContentPane().add(panel);
 		
-		lblResultado = new JLabel("---------------------------------------------------------------------");
-		lblResultado.setForeground(Color.RED);
-		lblResultado.setFont(new Font("Dialog", Font.BOLD, 14));
-		lblResultado.setBounds(44, 272, 345, 14);
-		contentPane.add(lblResultado);
+		data.setLblResultado(new JLabel("---------------------------------------------------------------------"));
+		data.getLblResultado().setForeground(Color.RED);
+		data.getLblResultado().setFont(new Font("Dialog", Font.BOLD, 14));
+		data.getLblResultado().setBounds(44, 272, 345, 14);
+		data.getContentPane().add(data.getLblResultado());
 		
 		
-		btnDepar.addActionListener(this);
-		btnEmple.addActionListener(this);
-		btnEstadDepar.addActionListener(this);
-		btnEstadEmple.addActionListener(this);
+		data.getBtnDepar().addActionListener(this);
+		data.getBtnEmple().addActionListener(this);
+		data.getBtnEstadDepar().addActionListener(this);
+		data.getBtnEstadEmple().addActionListener(this);
 	
 	}	
 
@@ -92,15 +86,16 @@ public void actionPerformed(ActionEvent e)
 {   
 	
 	String BBDD="Empleados.dat";
-	odb = ODBFactory.open(BBDD);
+	bbdd = BBDD;
+	data.setOdb(ODBFactory.open(bbdd));
 	
-    if (e.getSource() == btnDepar) { consuldepart();  	}
+    if (e.getSource() == data.getBtnDepar()) { consuldepart();  	}
 	
-	if (e.getSource() == btnEmple) { consulemple();  	}
+	if (e.getSource() == data.getBtnEmple()) { consulemple();  	}
 	
-	if (e.getSource() == btnEstadDepar) { estadisdepart();  	}
+	if (e.getSource() == data.getBtnEstadDepar()) { estadisdepart();  	}
 	
-	if (e.getSource() == btnEstadEmple) { estadisemple();  	}
+	if (e.getSource() == data.getBtnEstadEmple()) { estadisemple();  	}
 	
 }		
 	
@@ -109,7 +104,7 @@ public void actionPerformed(ActionEvent e)
 public void consuldepart() {
 				IQuery query=new CriteriaQuery(Departamento.class);
 				query.orderByAsc("dept_no");
-				Objects<Departamento> depar=odb.getObjects(query);
+				Objects<Departamento> depar=data.getOdb().getObjects(query);
 				
 				if(!depar.isEmpty()){
 					int cont=depar.size();
@@ -118,7 +113,7 @@ public void consuldepart() {
 					System.out.println(cabecera);
 					System.out.println("-----------------------------------------------------------------------------");
 					for(Departamento d:depar){					
-						Values values=odb.getValues(new ValuesCriteriaQuery(Empleado.class,
+						Values values=data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class,
 								Where.equal("dept.dept_no", d.getDept_no()))
 								.count("emp_no")
 								.sum("salario"));
@@ -134,16 +129,16 @@ public void consuldepart() {
 							
 							System.out.println(salida);
 						}
-						lblResultado.setText("Hay "+cont+" departamentos");
+						data.getLblResultado().setText("Hay "+cont+" departamentos");
 					}
 				}
 				else{
 					String error = "No existen datos de departamentos";
 					System.out.println(error);
-					lblResultado.setText(error);
+					data.getLblResultado().setText(error);
 				}
 				System.out.println("-----------------------------------------------------------------------------");
-				odb.close();
+				data.getOdb().close();
 			}
 ///////////////////////////////////////////////////////////////
 public void consulemple() {		
@@ -151,7 +146,7 @@ public void consulemple() {
 	
 			IQuery query=new CriteriaQuery(Empleado.class);
 				query.orderByAsc("emp_no");
-				Objects<Empleado> emp=odb.getObjects(query);
+				Objects<Empleado> emp=data.getOdb().getObjects(query);
 				
 				if(!emp.isEmpty()){
 					int cont=emp.size();
@@ -169,15 +164,15 @@ public void consulemple() {
 							salida+=String.format("%30s", "No tiene departamento asociado");
 						System.out.println(salida);
 					}
-					lblResultado.setText("Hay "+cont+" empleados");
+					data.getLblResultado().setText("Hay "+cont+" empleados");
 				}
 				else{
 					String error = "No existen datos de empleados";
 					System.out.println(error);
-					lblResultado.setText(error);
+					data.getLblResultado().setText(error);
 				}
 				System.out.println("-------------------------------------------------------------------------------------------------------\n");
-				odb.close();
+				data.getOdb().close();
 			}
 //////////////////////////////////
 //Estadisticas departamentos
@@ -188,7 +183,7 @@ public void estadisdepart() {
 				String nombre=null;
 				String nombreSal=null;
 				
-				Values values=odb.getValues(new ValuesCriteriaQuery(Empleado.class, Where.isNotNull("dept")).
+				Values values=data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class, Where.isNotNull("dept")).
 						field("dept.dnombre").count("emp_no").sum("salario").groupBy("dept.dnombre"));
 							
 				for(ObjectValues o:values){
@@ -209,16 +204,16 @@ public void estadisdepart() {
 				if(nombre!=null) {
 					System.out.println("El departamento con mas empleados es: "+nombre+" con "+max+" empleados");
 					System.out.println("El departamento con mas media de salario es: "+nombreSal+" con "+maxSal+"€");
-					lblResultado.setText("Estadisticas de departamentos mostradas");
+					data.getLblResultado().setText("Estadisticas de departamentos mostradas");
 				}
 				else{
 					String error = "No hay estadisticas de departamentos";
 					System.out.println(error);
-					lblResultado.setText(error);
+					data.getLblResultado().setText(error);
 				}
 				
 				System.out.println("-----------------------------------------------\n");
-				odb.close();
+				data.getOdb().close();
 			}
 /////////////////////////////////////////////////////////
 		
@@ -226,21 +221,21 @@ public void estadisdepart() {
 	public void estadisemple() {
 					
 				//Empleado con mas salario
-				Values values=odb.getValues(new ValuesCriteriaQuery(Empleado.class, 
-						Where.equal("salario", odb.getValues(new ValuesCriteriaQuery(Empleado.class).max("salario")).next().getByIndex(0)))
+				Values values=data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class, 
+						Where.equal("salario", data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class).max("salario")).next().getByIndex(0)))
 						.field("salario").field("nombre", "nom"));
 				if(!values.isEmpty()){
 					ObjectValues o=values.next();
 					System.out.println("El empleado con mas salario es: "+o.getByAlias("nom")+" con un salario de "+o.getByIndex(0)+"€");
 					
 					//Media de salario
-					values=odb.getValues(new ValuesCriteriaQuery(Empleado.class).count("emp_no").sum("salario"));
+					values=data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class).count("emp_no").sum("salario"));
 					ObjectValues o2=values.next();
 					double media=((BigDecimal)o2.getByIndex(1)).doubleValue()/((BigInteger)o2.getByIndex(0)).intValue();
 					System.out.println("La media de salario de los empleados es: "+media+"€");
 					
 					//Numero de empleados por oficio
-					values=odb.getValues(new ValuesCriteriaQuery(Empleado.class).count("emp_no").field("oficio").groupBy("oficio"));
+					values=data.getOdb().getValues(new ValuesCriteriaQuery(Empleado.class).count("emp_no").field("oficio").groupBy("oficio"));
 					String cabecera=String.format("%15s  %10s", "Oficio", "Num emple");
 					System.out.println(cabecera);
 					System.out.println("---------------------------");
@@ -248,15 +243,15 @@ public void estadisdepart() {
 						String datos=String.format("%15s  %10s", o3.getByIndex(1), o3.getByIndex(0));
 						System.out.println(datos);
 					}
-					lblResultado.setText("Estadisticas de empleados mostradas");
+					data.getLblResultado().setText("Estadisticas de empleados mostradas");
 				}
 				else{
 					String error = "No hay empleados";
 					System.out.println(error);
-					lblResultado.setText(error);
+					data.getLblResultado().setText(error);
 				}
 				System.out.println("---------------------------\n");
-				odb.close();
+				data.getOdb().close();
 			}
 ////////////////////////////////////////
 }
